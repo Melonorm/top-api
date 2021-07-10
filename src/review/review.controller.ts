@@ -17,6 +17,7 @@ import { Types } from "mongoose";
 import { JwtAuthGuard } from "../auth/guards/jwt.guard";
 import { AuthGuard } from "@nestjs/passport";
 import { UserEmail } from "../decorators/user-email.decorator";
+import { IdValidationPipe } from "../pipes/id-validation.pipe";
 
 
 @Controller('review')
@@ -32,7 +33,7 @@ export class ReviewController {
 
   @UseGuards(AuthGuard('jwt'))   // для использования роута требуется авторизация с применением JWT (проверяется JwtAuthGuard)
   @Delete(':id')
-  async delete(@Param('id')id: string) {
+  async delete(@Param('id', IdValidationPipe)id: string) {
     const deletedDoc = await this.reviewService.delete(id);
     if (!deletedDoc) {   // обработка null результата. Если документ по Id не найден, кидаем Http-исключение
       throw new HttpException(REVIEW_NOT_FOUND, HttpStatus.NOT_FOUND);  // текст ошибки в отдельной константе, статус ошибки - 404
@@ -41,7 +42,7 @@ export class ReviewController {
 
 
   @Get(':byProduct/:productId')
-  async getByProduct(@Param('productId') productId: string) {
+  async getByProduct(@Param('productId', IdValidationPipe) productId: string) {
 
     return this.reviewService.findByProductId(productId);
   };

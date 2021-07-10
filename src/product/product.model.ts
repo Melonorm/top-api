@@ -23,13 +23,15 @@ export class ProductModel extends TimeStamps{
   price: number;
 
   @prop()
-  oldPrice: number;
+  oldPrice?: number;    // старой цены может и не быть
 
   @prop()
   credit: number;
 
+/*
   @prop()
-  calculatedRating: number;
+  calculatedRating: number;      // рейтинг будет расчитываться в агрегациях монго
+*/
 
   @prop()
   description: string;
