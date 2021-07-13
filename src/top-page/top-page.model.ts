@@ -1,5 +1,5 @@
+import { index, prop } from "@typegoose/typegoose";
 import { TimeStamps, Base } from "@typegoose/typegoose/lib/defaultClasses";
-import { prop } from "@typegoose/typegoose";
 
 export enum TopLevelCategory {
   Courses,
@@ -31,6 +31,10 @@ export class TopPageAdvantage {
 }
 
 export interface TopPageModel extends Base {}
+/*                                         ВНИМАНИЕ!!! В этом случае не ищет в полях-массивах!!!
+@index({title: 'text', seoText: 'text'}) // для реализации поиска по нескольким полям БД. Передаются имена полей. В значения передаются либо "text" для текстового индекса, либо 1 для общего индекса.
+*/
+@index({"$**": 'text'}) // с данноц wildCard ("$**") ищет по всем полям класса, В ТОМ ЧИСЛЕ И ВНУТРИ МАССИВОВ
 export class TopPageModel extends TimeStamps {
 
   @prop({enum: TopLevelCategory})    // сообщает декоратору, что поле - enum
@@ -42,7 +46,7 @@ export class TopPageModel extends TimeStamps {
   @prop({unique: true})   // alias должен быть уникальным, чтобы потом можно было получать объект по его значению alias
   alias: string
 
-  @prop()
+  @prop(/*{text: true}*/)  // если нужен индекс текста (для поиска) по одному полю, используем в props поле text. Если нужен поиск по нескольким полям - используем декоратор index над классом
   title: string;
 
   @prop()
