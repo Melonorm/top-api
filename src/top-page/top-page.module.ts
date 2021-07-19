@@ -16,6 +16,7 @@ import { TopPageService } from './top-page.service';
       }
     ])
   ],
-  providers: [TopPageService]
+  providers: [TopPageService],
+  exports: [TopPageService]   // TopPageService должен быть доступен вне модуля
 })
 export class TopPageModule {}

@@ -20,30 +20,9 @@ export class TopPageService {
     return this.topPageModel.findOne({ alias }).exec();  // findOne, потому что поле alias уникальное у TopPageModel (unique: true)
   }
 
-/*    Данные, получаемые таким методом будут несгруппированные. Лучше восполььзоваться следующим методом (через aggregate)
-  async findByCategory(firstCategory: TopLevelCategory) {  // find, потому что может найти несколько страниц, подпадающих под одну и ту же категорию
-    return this.topPageModel.find({ firstCategory }, { alias: 1, secondCategory: 1, title: 1}).exec();   // второй параметр метода find - список полей, который нужно отобразить (если не нужно отображать весь объект). Указывается имя поля и 1, если поле нужно отобразить
+  async findAll() {  // Метод используется в построении sitemap. Этот метод будет задействован в SitemapService, поэтому нужно экспортировать TopPageService из TopPageModule и импортировать TopPageModule в SiteMapModule
+    return this.topPageModel.find({}).exec();
   }
-*/
-
-/*
-  async findByCategory(firstCategory: TopLevelCategory) {
-    return this.topPageModel.aggregate([
-      {
-        $match: {      // Шаг 1: ищем данные по полю firstCategory
-          firstCategory
-        }
-      },
-      {
-        $group: {    // Шаг 2: группируем найденные данные по неоторым критериям
-          _id: { secondCategory: '$secondCategory' },  // группируем данные по полю secondCategory (это будет id группы)
-          pages: { $push: { alias: '$alias', title: '$title' } } // второе поле (pages) будет массив с найденными полями alias и title
-        }
-      }
-    ]).exec();
-  }
-*/
-
 
   async findByCategory(firstCategory: TopLevelCategory) {  // предыдущий метод можно написать с помощью chainable операторов:
     return this.topPageModel
@@ -58,6 +37,30 @@ export class TopPageService {
       .exec();
   }
 
+//   /*    Данные, получаемые таким методом будут несгруппированные. Лучше восполььзоваться следующим методом (через aggregate)
+//   async findByCategory(firstCategory: TopLevelCategory) {  // find, потому что может найти несколько страниц, подпадающих под одну и ту же категорию
+//     return this.topPageModel.find({ firstCategory }, { alias: 1, secondCategory: 1, title: 1}).exec();   // второй параметр метода find - список полей, который нужно отобразить (если не нужно отображать весь объект). Указывается имя поля и 1, если поле нужно отобразить
+//   }
+// */
+//
+//   /*
+//     async findByCategory(firstCategory: TopLevelCategory) {
+//       return this.topPageModel.aggregate([
+//         {
+//           $match: {      // Шаг 1: ищем данные по полю firstCategory
+//             firstCategory
+//           }
+//         },
+//         {
+//           $group: {    // Шаг 2: группируем найденные данные по неоторым критериям
+//             _id: { secondCategory: '$secondCategory' },  // группируем данные по полю secondCategory (это будет id группы)
+//             pages: { $push: { alias: '$alias', title: '$title' } } // второе поле (pages) будет массив с найденными полями alias и title
+//           }
+//         }
+//       ]).exec();
+//     }
+//   */
+
 
   async findByText(text: string) {   // поиск элемента по тексту заданных в индексе полей.
     return this.topPageModel.find({$text: {$search: text, $caseSensitive: false}}).exec();  // ищем строку ${text}, игнорируя значение кейза
@@ -69,9 +72,5 @@ export class TopPageService {
 
   async updateById(id: string, dto: CreateTopPageDto) {
     return this.topPageModel.findByIdAndUpdate(id, dto, { new: true }).exec();
-  }
-
-  async getAll() {
-    return this.topPageModel.find();
   }
 }

@@ -77,7 +77,7 @@ export class TopPageController {
 
   @Get('/all/getAll')
   async getAll() {
-    return this.topPageService.getAll();
+    return this.topPageService.findAll();
   }
 
 }
